@@ -1,0 +1,22 @@
+# Emacs-style backup
+*~
+# DOS-style backup
+*.bak
+
+# Compiled object file
+*.o
+# UNIX-style static library
+*.a
+# UNIX-style shared library
+*.so
+# Darwin-style shared library
+*.dylib
+# OS/2-style shared library
+*.dll
+# OS/2-style executable
+*.exe
+# Dependency file
+*.d
+
+# All built executables
+bin/**
