@@ -12,13 +12,16 @@ EXE=
 
 all: bin/liblsx.a bin/liblsx$(SO)
 
-test: bin/lsx_test
+test: bin/lsx_test_twofish
 	@echo Running tests...
-	@bin/lsx_test
+	@echo Twofish...
+	@bin/lsx_test_twofish
+#	@echo SHA-256...
+#	@bin/lsx_test_sha256
 	@echo Tests passed!
 
 bin/liblsx.a bin/liblsx$(SO): obj/lsx_twofish.o
-bin/lsx_test: obj/lsx_test.o bin/liblsx.a
+bin/lsx_test_twofish: obj/lsx_test_twofish.o bin/liblsx.a
 
 bin/%$(SO):
 	@echo Linking "$@"...

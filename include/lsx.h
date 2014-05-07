@@ -36,6 +36,10 @@ extern void lsx_destroy_twofish(lsx_twofish_key* key);
 #define lsx_destroy_twofish192 lsx_destroy_twofish
 #define lsx_destroy_twofish256 lsx_destroy_twofish
 
+/*** SHA-256 ***/
+
+
+
 #ifdef __cplusplus
 }
 #endif
