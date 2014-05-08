@@ -152,12 +152,6 @@ void lsx_calculate_sha256(const void* message, size_t bytes,
                           uint8_t out[SHA256_HASHBYTES]) {
   lsx_sha256_expert_context ctx;
   lsx_setup_sha256_expert(&ctx);
-  if(bytes > SHA256_CHUNKBYTES) {
-    size_t chunks = bytes / SHA256_CHUNKBYTES;
-    lsx_input_sha256_expert(&ctx, message, chunks);
-    message = (const uint8_t*)message + SHA256_CHUNKBYTES * chunks;
-    bytes = bytes - SHA256_CHUNKBYTES * chunks;
-  }
   lsx_finish_sha256_expert(&ctx, message, bytes, out);
   lsx_destroy_sha256_expert(&ctx);
 }
