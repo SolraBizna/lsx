@@ -26,35 +26,35 @@ extern void lsx_explicit_bzero(void* p, size_t n);
 /* The key-dependent S-boxes and subkeys for a given Twofish key */
 /* The same structure is used for all three Twofish variants, but convenience
    macros exist in case programmers want to be more explicit */
-typedef struct lsx_twofish_key {
+typedef struct lsx_twofish_context {
   /* The S-boxes, composed with the MDS matrix */
   uint32_t s[4][256];
   /* The "whitening" subkeys */
   uint32_t W[8];
   /* The round subkeys */
   uint32_t K[32];
-} lsx_twofish_key;
-#define lsx_twofish128_key lsx_twofish_key
-#define lsx_twofish192_key lsx_twofish_key
-#define lsx_twofish256_key lsx_twofish_key
+} lsx_twofish_context;
+#define lsx_twofish128_context lsx_twofish_context
+#define lsx_twofish192_context lsx_twofish_context
+#define lsx_twofish256_context lsx_twofish_context
 
 /* Calculate the key-dependent data for 128-, 192-, and 256-bit Twofish. */
-extern void lsx_setup_twofish128(lsx_twofish_key* out,
+extern void lsx_setup_twofish128(lsx_twofish_context* ctx,
                                  const uint8_t in[TWOFISH128_KEYBYTES]);
-extern void lsx_setup_twofish192(lsx_twofish_key* out,
+extern void lsx_setup_twofish192(lsx_twofish_context* ctx,
                                  const uint8_t in[TWOFISH192_KEYBYTES]);
-extern void lsx_setup_twofish256(lsx_twofish_key* out,
+extern void lsx_setup_twofish256(lsx_twofish_context* ctx,
                                  const uint8_t in[TWOFISH256_KEYBYTES]);
 
 /* Encrypt/decrypt a block with the given key-dependent data.
    Note: in and out may safely point to the same memory. */
-extern void lsx_encrypt_twofish(lsx_twofish_key* key,
+extern void lsx_encrypt_twofish(lsx_twofish_context* ctx,
                                 const uint8_t in[TWOFISH_BLOCKBYTES],
                                 uint8_t out[TWOFISH_BLOCKBYTES]);
 #define lsx_encrypt_twofish128 lsx_encrypt_twofish
 #define lsx_encrypt_twofish192 lsx_encrypt_twofish
 #define lsx_encrypt_twofish256 lsx_encrypt_twofish
-extern void lsx_decrypt_twofish(lsx_twofish_key* key,
+extern void lsx_decrypt_twofish(lsx_twofish_context* ctx,
                                 const uint8_t in[TWOFISH_BLOCKBYTES],
                                 uint8_t out[TWOFISH_BLOCKBYTES]);
 #define lsx_decrypt_twofish128 lsx_decrypt_twofish

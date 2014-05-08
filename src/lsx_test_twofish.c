@@ -13,7 +13,7 @@
 
 /* from "ecb_ival.txt" */
 static const struct ecb_ival_entry {
-  void(*setup_func)(lsx_twofish_key* out, const uint8_t* in);
+  void(*setup_func)(lsx_twofish_context* ctx, const uint8_t* in);
   const char* who;
   const uint8_t* in_key;
   const uint8_t in_pt[16], out_ct[16];
@@ -83,7 +83,7 @@ static const struct ecb_ival_entry {
 
 /* from "ecb_tbl.txt" */
 static const struct ecb_tbl_entry {
-  void(*setup_func)(lsx_twofish_key* out, const uint8_t* in);
+  void(*setup_func)(lsx_twofish_context* ctx, const uint8_t* in);
   const char* who;
   uint8_t first_ten_and_last_two[12][16];
 } ecb_tbl_entries[] = {
@@ -149,34 +149,34 @@ int main(int argc, char* argv[]) {
   ret = ret || test_32bit_table(gpg_mds[2], mdsq[2]);
   ret = ret || test_32bit_table(gpg_mds[3], mdsq[3]);
   for(unsigned n = 0; n < elementcount(ecb_ival_entries); ++n) {
-    lsx_twofish_key key;
+    lsx_twofish_context ctx;
     const struct ecb_ival_entry* ent = ecb_ival_entries + n;
-    ent->setup_func(&key, ent->in_key);
+    ent->setup_func(&ctx, ent->in_key);
     uint8_t ct[16], pt[16];
-    lsx_encrypt_twofish(&key, ent->in_pt, ct);
-    lsx_decrypt_twofish(&key, ct, pt);
+    lsx_encrypt_twofish(&ctx, ent->in_pt, ct);
+    lsx_decrypt_twofish(&ctx, ct, pt);
     if(memcmp(ct, ent->out_ct, 16)) goto ecb_ival_test_failed;
     if(memcmp(pt, ent->in_pt, 16)) goto ecb_ival_test_failed;
     for(int i = 0; i < 8; ++i) {
-      if(key.W[i] != ent->out_K[i]) goto ecb_ival_test_failed;
+      if(ctx.W[i] != ent->out_K[i]) goto ecb_ival_test_failed;
     }
     for(int i = 0; i < 32; ++i) {
-      if(key.K[i] != ent->out_K[i+8]) goto ecb_ival_test_failed;
+      if(ctx.K[i] != ent->out_K[i+8]) goto ecb_ival_test_failed;
     }
-    lsx_destroy_twofish(&key); // be needlessly clean
+    lsx_destroy_twofish(&ctx); // be needlessly clean
     continue;
   ecb_ival_test_failed:
     fprintf(stderr, "ecb_ival %s failed!\n", ent->who);
     fprintf(stderr, "  datum |   known  |  result\n");
     for(int i = 0; i < 8; ++i) {
       output_datum("  K[%2i] | %08X | %08X\n",
-                   i, ent->out_K[i], key.W[i]);
+                   i, ent->out_K[i], ctx.W[i]);
     }
     for(int i = 0; i < 32; ++i) {
       output_datum("  K[%2i] | %08X | %08X\n",
-                   i+8, ent->out_K[i+8], key.K[i]);
+                   i+8, ent->out_K[i+8], ctx.K[i]);
     }
-    lsx_destroy_twofish(&key);
+    lsx_destroy_twofish(&ctx);
     for(int i = 0; i < 16; ++i) {
       output_datum(" CT[%2i] |    %02X    |    %02X\n",
                    i, ent->out_ct[i], ct[i]);
@@ -188,17 +188,17 @@ int main(int argc, char* argv[]) {
     plain();
     ret = 1;
   }
-  uint8_t keystring[32], ct[16], pt[16];
+  uint8_t key[32], ct[16], pt[16];
   for(unsigned n = 0; n < elementcount(ecb_tbl_entries); ++n) {
-    lsx_twofish_key key;
+    lsx_twofish_context ctx;
     const struct ecb_tbl_entry* ent = ecb_tbl_entries + n;
     unsigned i;
     int known_index;
-    memset(keystring, 0, sizeof(keystring));
+    memset(key, 0, sizeof(key));
     memset(pt, 0, sizeof(pt));
     for(i = 0; i < 49; ++i) {
-      ent->setup_func(&key, keystring);
-      lsx_encrypt_twofish(&key, pt, ct);
+      ent->setup_func(&ctx, key);
+      lsx_encrypt_twofish(&ctx, pt, ct);
       switch(i) {
       case 0: case 1: case 2: case 3: case 4:
       case 5: case 6: case 7: case 8: case 9:
@@ -210,17 +210,17 @@ int main(int argc, char* argv[]) {
       if(known_index >= 0 &&
          memcmp(ct, ent->first_ten_and_last_two[known_index], 16))
         goto bad_result;
-      memcpy(keystring+16, keystring, 16);
-      memcpy(keystring, pt, 16);
+      memcpy(key+16, key, 16);
+      memcpy(key, pt, 16);
       memcpy(pt, ct, 16);
     }
-    lsx_destroy_twofish(&key);
+    lsx_destroy_twofish(&ctx);
     continue;
   bad_result:
     fprintf(stderr, "ecb_tbl %s failed after %u iterations!\n", ent->who, i+1);
     fprintf(stderr, "  datum | kn | re\n");
     for(int i = 0; i < 32; ++i) {
-      output_datum("KEY[%2i] | %02X\n", i, keystring[i], keystring[i]);
+      output_datum("KEY[%2i] | %02X\n", i, key[i], key[i]);
     }
     for(int i = 0; i < 16; ++i) {
       output_datum(" PT[%2i] | %02X\n", i, pt[i], pt[i]);
@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
       output_datum(" CT[%2i] | %02X | %02X\n",
                    i, ent->first_ten_and_last_two[known_index][i], ct[i]);
     }
-    lsx_destroy_twofish(&key);
+    lsx_destroy_twofish(&ctx);
     ret = 1;
   }
   plain();
