@@ -1,3 +1,6 @@
+PREFIX=/usr/local
+INSTALL=install -p
+
 # Linux, other POSIX
 CC=gcc
 CCFLAGS=-std=c99 -O3 -fpic -MP -MMD -Iinclude/ -g -Wall -Wextra -Werror -c -o
@@ -11,6 +14,10 @@ SO=.so
 EXE=
 
 all: bin/liblsx.a bin/liblsx$(SO) test
+
+install: bin/liblsx.a bin/liblsx$(SO)
+	$(INSTALL) $^ $(PREFIX)/lib
+	$(INSTALL) include/lsx.h include/lsx.hh $(PREFIX)/include
 
 test: bin/lsx_test_twofish bin/lsx_test_sha256
 	@echo Running tests...
