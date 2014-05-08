@@ -89,8 +89,7 @@ extern void lsx_setup_sha256_expert(lsx_sha256_expert_context* ctx);
    (number of bytes = `SHA256_CHUNKBYTES` * `chunks`) */
 extern void lsx_input_sha256_expert(lsx_sha256_expert_context* ctx,
                                     const void* input, size_t chunks);
-/* Add the last chunk, whether a full chunk, a partial chunk, or even an empty
-   one, and compute the hash.
+/* Add any remaining data and compute the hash.
    This leaves `ctx` in an unusable state. Call `lsx_setup_sha256_expert` on it
    if you want to use it again, or `lsx_destroy_sha256_expert` if you don't. */
 extern void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
