@@ -10,18 +10,19 @@ ARFLAGS=-rscD
 SO=.so
 EXE=
 
-all: bin/liblsx.a bin/liblsx$(SO)
+all: bin/liblsx.a bin/liblsx$(SO) test
 
-test: bin/lsx_test_twofish
+test: bin/lsx_test_twofish bin/lsx_test_sha256
 	@echo Running tests...
 	@echo Twofish...
 	@bin/lsx_test_twofish
-#	@echo SHA-256...
-#	@bin/lsx_test_sha256
+	@echo SHA-256...
+	@bin/lsx_test_sha256
 	@echo Tests passed!
 
-bin/liblsx.a bin/liblsx$(SO): obj/lsx_twofish.o
+bin/liblsx.a bin/liblsx$(SO): obj/lsx_twofish.o obj/lsx_sha256.o obj/lsx_bzero.o
 bin/lsx_test_twofish: obj/lsx_test_twofish.o bin/liblsx.a
+bin/lsx_test_sha256: obj/lsx_test_sha256.o bin/liblsx.a
 
 bin/%$(SO):
 	@echo Linking "$@"...

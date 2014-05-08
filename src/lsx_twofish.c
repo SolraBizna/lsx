@@ -11,8 +11,9 @@
 /* "splat" a byte into a word */
 #define p(i) ((uint32_t)(i) | ((uint32_t)(i) << 8) | ((uint32_t)(i) << 16) | ((uint32_t)(i) << 24))
 
+/* twofish is little endian */
 #define bytes_to_word(p) ((uint32_t)(p)[0] | ((uint32_t)(p)[1] << 8) | ((uint32_t)(p)[2] << 16) | ((uint32_t)(p)[3] << 24))
-#define word_to_bytes(word, p) ((p)[0] = (uint8_t)word, (p)[1] = (uint8_t)(word>>8), (p)[2] = (uint8_t)(word>>16), (p)[3] = (uint8_t)(word>>24))
+#define word_to_bytes(word, p) ((p)[0] = (uint8_t)(word), (p)[1] = (uint8_t)((word)>>8), (p)[2] = (uint8_t)((word)>>16), (p)[3] = (uint8_t)((word)>>24))
 
 #define rotate_right(a,i) (((a)>>i)|((a)<<(32-i)))
 #define rotate_left(a,i) (((a)<<i)|((a)>>(32-i)))
@@ -125,9 +126,5 @@ void lsx_decrypt_twofish(lsx_twofish_key* key,
   word_to_bytes(R1, out+4);
   word_to_bytes(R2, out+8);
   word_to_bytes(R3, out+12);
-}
-
-void lsx_destroy_twofish(lsx_twofish_key* key) {
-  memset(key, 0, sizeof(*key));
 }
 

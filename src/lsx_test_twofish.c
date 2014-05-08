@@ -140,14 +140,14 @@ static const struct ecb_tbl_entry {
 int main(int argc, char* argv[]) {
   (void)argc; (void)argv;
   int ret = 0;
-  ret += test_8bit_table(gpg_q0, q0);
-  ret += test_8bit_table(gpg_q1, q1);
-  ret += test_8bit_table(gpg_poly_to_exp, rs_poly_to_exp);
-  ret += test_8bit_table(gpg_exp_to_poly, rs_poly_from_exp);
-  ret += test_32bit_table(gpg_mds[0], mdsq[0]);
-  ret += test_32bit_table(gpg_mds[1], mdsq[1]);
-  ret += test_32bit_table(gpg_mds[2], mdsq[2]);
-  ret += test_32bit_table(gpg_mds[3], mdsq[3]);
+  ret = ret || test_8bit_table(gpg_q0, q0);
+  ret = ret || test_8bit_table(gpg_q1, q1);
+  ret = ret || test_8bit_table(gpg_poly_to_exp, rs_poly_to_exp);
+  ret = ret || test_8bit_table(gpg_exp_to_poly, rs_poly_from_exp);
+  ret = ret || test_32bit_table(gpg_mds[0], mdsq[0]);
+  ret = ret || test_32bit_table(gpg_mds[1], mdsq[1]);
+  ret = ret || test_32bit_table(gpg_mds[2], mdsq[2]);
+  ret = ret || test_32bit_table(gpg_mds[3], mdsq[3]);
   for(unsigned n = 0; n < elementcount(ecb_ival_entries); ++n) {
     lsx_twofish_key key;
     const struct ecb_ival_entry* ent = ecb_ival_entries + n;

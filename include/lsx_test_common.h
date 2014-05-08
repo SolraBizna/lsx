@@ -8,9 +8,9 @@ static inline void plain() { fprintf(stderr, "\x1B[0m"); }
     else green(); \
     fprintf(stderr, format, i, known, result)
 
-static int _test_8bit_table(const uint8_t* known, size_t known_size,
-                            const uint8_t* ours, size_t our_size,
-                            const char* table_name) {
+static inline int _test_8bit_table(const uint8_t* known, size_t known_size,
+                                   const uint8_t* ours, size_t our_size,
+                                   const char* table_name) {
   if(known_size != our_size) goto test_failed;
   for(unsigned i = 0; i < known_size; ++i) {
     if(known[i] != ours[i]) goto test_failed;
@@ -32,9 +32,9 @@ static int _test_8bit_table(const uint8_t* known, size_t known_size,
 #define test_8bit_table(known,ours) \
 _test_8bit_table(known, sizeof(known), ours, sizeof(ours), #ours)
 
-static int _test_32bit_table(const uint32_t* known, size_t known_size,
-                             const uint32_t* ours, size_t our_size,
-                             const char* table_name) {
+static inline int _test_32bit_table(const uint32_t* known, size_t known_size,
+                                    const uint32_t* ours, size_t our_size,
+                                    const char* table_name) {
   if(known_size != our_size) goto test_failed;
   for(unsigned i = 0; i < known_size; ++i) {
     if(known[i] != ours[i]) goto test_failed;
