@@ -38,7 +38,7 @@ void lsx_setup_sha256_expert(lsx_sha256_expert_context* ctx) {
 }
 
 void lsx_input_sha256_expert(lsx_sha256_expert_context* ctx,
-                             const void* _input, size_t chunks) {
+                             const void* _input, size_t blocks) {
   /* these don't get sanitized because I can't bring myself to slow it down
      that much (and needlessly) on register-heavy architectures, so we'll put
      them as low on the stack as possible to improve their odds of being
@@ -48,12 +48,12 @@ void lsx_input_sha256_expert(lsx_sha256_expert_context* ctx,
   uint32_t s0, s1;
   uint32_t w[64];
   const uint8_t* input = (const uint8_t*)_input;
-  ctx->bytes_so_far += chunks * SHA256_CHUNKBYTES;
-  while(chunks-- > 0) {
+  ctx->bytes_so_far += blocks * SHA256_BLOCKBYTES;
+  while(blocks-- > 0) {
     unsigned i;
     for(i = 0; i < 16; ++i)
       w[i] = bytes_to_word(input + i * 4);
-    input += SHA256_CHUNKBYTES;
+    input += SHA256_BLOCKBYTES;
     for(; i < 64; ++i) {
       s0 = rotate_right(w[i-15],7) ^ rotate_right(w[i-15],18) ^ (w[i-15]>>3);
       s1 = rotate_right(w[i-2],17) ^ rotate_right(w[i-2],19) ^ (w[i-2]>>10);
@@ -78,18 +78,18 @@ void lsx_input_sha256_expert(lsx_sha256_expert_context* ctx,
 void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
                               const void* input, size_t bytes,
                               uint8_t out[SHA256_HASHBYTES]) {
-  uint8_t buf[SHA256_CHUNKBYTES];
-  if(bytes >= SHA256_CHUNKBYTES) {
-    size_t chunks = bytes / SHA256_CHUNKBYTES;
-    lsx_input_sha256_expert(ctx, input, chunks);
-    input = (const uint8_t*)input + SHA256_CHUNKBYTES * chunks;
-    bytes = bytes - SHA256_CHUNKBYTES * chunks;
+  uint8_t buf[SHA256_BLOCKBYTES];
+  if(bytes >= SHA256_BLOCKBYTES) {
+    size_t blocks = bytes / SHA256_BLOCKBYTES;
+    lsx_input_sha256_expert(ctx, input, blocks);
+    input = (const uint8_t*)input + SHA256_BLOCKBYTES * blocks;
+    bytes = bytes - SHA256_BLOCKBYTES * blocks;
   }
-  /* assert(bytes < SHA256_CHUNKBYTES) */
+  /* assert(bytes < SHA256_BLOCKBYTES) */
   uint64_t actual_bits_out = (ctx->bytes_so_far + bytes) * 8;
   memcpy(buf, input, bytes);
   buf[bytes] = 0x80;
-  if(bytes > SHA256_CHUNKBYTES - 9) {
+  if(bytes > SHA256_BLOCKBYTES - 9) {
     lsx_explicit_bzero(buf + bytes + 1, 64 - bytes - 1);
     lsx_input_sha256_expert(ctx, buf, 1);
     lsx_explicit_bzero(buf, bytes + 1);
@@ -97,7 +97,7 @@ void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
   else {
     lsx_explicit_bzero(buf + bytes + 1, 64 - 8 - bytes - 1);
   }
-  int64_to_bytes(actual_bits_out, buf + SHA256_CHUNKBYTES - 8);
+  int64_to_bytes(actual_bits_out, buf + SHA256_BLOCKBYTES - 8);
   lsx_input_sha256_expert(ctx, buf, 1);
   for(unsigned i = 0; i < 8; ++i) {
     word_to_bytes(ctx->h[i], out + i * 4);
@@ -114,27 +114,27 @@ void lsx_input_sha256(lsx_sha256_context* ctx,
                       const void* input, size_t bytes) {
   if(ctx->num_buffered_bytes) {
     size_t bytes_to_add = bytes;
-    if(ctx->num_buffered_bytes + bytes_to_add > SHA256_CHUNKBYTES)
-      bytes_to_add = SHA256_CHUNKBYTES - ctx->num_buffered_bytes;
+    if(ctx->num_buffered_bytes + bytes_to_add > SHA256_BLOCKBYTES)
+      bytes_to_add = SHA256_BLOCKBYTES - ctx->num_buffered_bytes;
     memcpy(ctx->buf + ctx->num_buffered_bytes, input, bytes_to_add);
     ctx->num_buffered_bytes += bytes_to_add;
     bytes -= bytes_to_add;
     input = (const uint8_t*)input + bytes_to_add;
-    if(ctx->num_buffered_bytes == SHA256_CHUNKBYTES) {
+    if(ctx->num_buffered_bytes == SHA256_BLOCKBYTES) {
       lsx_input_sha256_expert(&ctx->expert, ctx->buf, 1);
       ctx->num_buffered_bytes = 0;
     }
   }
-  if(bytes >= SHA256_CHUNKBYTES) {
-    /* after taking care of any leftover fraction of a chunk, there was more
-       than one full chunk of data; use it without buffering it first */
-    size_t chunks = bytes / SHA256_CHUNKBYTES;
-    lsx_input_sha256_expert(&ctx->expert, input, chunks);
-    input = (const uint8_t*)input + SHA256_CHUNKBYTES * chunks;
-    bytes = bytes - SHA256_CHUNKBYTES * chunks;
+  if(bytes >= SHA256_BLOCKBYTES) {
+    /* after taking care of any leftover fraction of a block, there was more
+       than one full block of data; use it without buffering it first */
+    size_t blocks = bytes / SHA256_BLOCKBYTES;
+    lsx_input_sha256_expert(&ctx->expert, input, blocks);
+    input = (const uint8_t*)input + SHA256_BLOCKBYTES * blocks;
+    bytes = bytes - SHA256_BLOCKBYTES * blocks;
   }
   if(bytes > 0) {
-    /* we've processed as many chunks as we can, and a fraction of a chunk is
+    /* we've processed as many blocks as we can, and a fraction of a block is
        still left; buffer it for later */
     assert(ctx->num_buffered_bytes == 0);
     memcpy(ctx->buf, input, (ctx->num_buffered_bytes = bytes));

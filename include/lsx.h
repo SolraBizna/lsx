@@ -73,8 +73,8 @@ extern void lsx_decrypt_twofish(lsx_twofish_context* ctx,
 
 /* Defines for people to use if they're nice */
 #define SHA256_HASHBYTES 32
-/* You add data to the message in units of CHUNKBYTES. */
-#define SHA256_CHUNKBYTES 64
+/* You add data to the message in units of BLOCKBYTES. */
+#define SHA256_BLOCKBYTES 64
 
 /* This is the "expert" interface for LSX's SHA-256 implementation. Scroll down
    for an interface that's easier to use. */
@@ -85,10 +85,10 @@ typedef struct lsx_sha256_expert_context {
 } lsx_sha256_expert_context;
 /* Set up the initial state */
 extern void lsx_setup_sha256_expert(lsx_sha256_expert_context* ctx);
-/* Add complete chunks of message data
-   (number of bytes = `SHA256_CHUNKBYTES` * `chunks`) */
+/* Add complete blocks of message data
+   (number of bytes = `SHA256_BLOCKBYTES` * `blocks`) */
 extern void lsx_input_sha256_expert(lsx_sha256_expert_context* ctx,
-                                    const void* input, size_t chunks);
+                                    const void* input, size_t blocks);
 /* Add any remaining data and compute the hash.
    This leaves `ctx` in an unusable state. Call `lsx_setup_sha256_expert` on it
    if you want to use it again, or `lsx_destroy_sha256_expert` if you don't. */
@@ -98,12 +98,12 @@ extern void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
 /* Convenience function to destroy any remaining important data. */
 #define lsx_destroy_sha256_expert(ctx) lsx_explicit_bzero(ctx, sizeof(*(ctx)))
 
-/* This is the easier interface. It's a thin layer on the above. If all you
-   want to do is hash a complete message in memory, there's an even easier
-   interface farther down. */
+/* This is the easy interface. It's a thin layer on the above. If all you want
+   to do is hash a complete message in memory, there's an even easier interface
+   farther down. */
 typedef struct lsx_sha256_context {
   lsx_sha256_expert_context expert;
-  uint8_t buf[SHA256_CHUNKBYTES];
+  uint8_t buf[SHA256_BLOCKBYTES];
   unsigned int num_buffered_bytes;
 } lsx_sha256_context;
 /* Set up the initial state */

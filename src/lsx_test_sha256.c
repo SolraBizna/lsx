@@ -42,7 +42,7 @@ static int test_easyish(unsigned count) {
     if(memcmp(hash, el->answer, SHA256_HASHBYTES)) goto failure;
     continue;
   failure:
-    fprintf(stderr, "SHA-256 (easyish:%u) known answer %u failed!\n", count, n);
+    fprintf(stderr, "SHA-256 (easy:%u) known answer %u failed!\n", count, n);
     fprintf(stderr, "datum | kn | re\n");
     for(unsigned i = 0; i < SHA256_HASHBYTES; ++i) {
       output_datum("h[%2u] | %02X | %02X\n", i, el->answer[i], hash[i]);
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     if(memcmp(hash, el->answer, SHA256_HASHBYTES)) goto easy_failed;
     continue;
   easy_failed:
-    fprintf(stderr, "SHA-256 (easy) known answer %u failed!\n", n);
+    fprintf(stderr, "SHA-256 (lazy) known answer %u failed!\n", n);
     fprintf(stderr, "datum | kn | re\n");
     for(unsigned i = 0; i < SHA256_HASHBYTES; ++i) {
       output_datum("h[%2u] | %02X | %02X\n", i, el->answer[i], hash[i]);
