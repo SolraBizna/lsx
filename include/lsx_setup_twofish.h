@@ -1,8 +1,9 @@
 #define k (key_bits / 64)
 void paste(lsx_setup_twofish,key_bits)(lsx_twofish_context* ctx, const uint8_t in[16]) {
+  unsigned i, x;
   uint8_t S[k*4];
   memset(S, 0, sizeof(S));
-  for(int i = 0; i < k; ++i) {
+  for(i = 0; i < k; ++i) {
 #define s (S+(k-i-1)*4)
 #define RS_MUL_COLUMN(column, a, b, c, d) \
     if(in[i*8+column]) { \
@@ -25,7 +26,7 @@ void paste(lsx_setup_twofish,key_bits)(lsx_twofish_context* ctx, const uint8_t i
 #undef s
   }
   /* calculate s[...] */
-  for(int x = 0; x < 256; ++x) {
+  for(x = 0; x < 256; ++x) {
     uint32_t rows[4];
     h_top_half(p(x), S, k, 0, rows);
     ctx->s[0][x] = rows[0];
@@ -34,7 +35,7 @@ void paste(lsx_setup_twofish,key_bits)(lsx_twofish_context* ctx, const uint8_t i
     ctx->s[3][x] = rows[3];
   }
   /* calculate K[0..7] */
-  for(int i = 0; i < 4; ++i) {
+  for(i = 0; i < 4; ++i) {
     uint32_t A = h(p(2*i), in, k, 4);
     uint32_t B = h(p(2*i+1), in+4, k, 4);
     B = rotate_left(B, 8); // avoid calling h twice
@@ -42,7 +43,7 @@ void paste(lsx_setup_twofish,key_bits)(lsx_twofish_context* ctx, const uint8_t i
     ctx->W[2*i+1] = rotate_left(A + (2 * B), 9);
   }
   /* calculate K[8..39] */
-  for(int i = 0; i < 16; ++i) {
+  for(i = 0; i < 16; ++i) {
     uint32_t A = h(p(2*(i+4)), in, k, 4);
     uint32_t B = h(p(2*(i+4)+1), in+4, k, 4);
     B = rotate_left(B, 8); // avoid calling h twice

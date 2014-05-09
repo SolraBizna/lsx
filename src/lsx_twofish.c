@@ -72,13 +72,14 @@ static inline uint32_t g(lsx_twofish_context* ctx, uint32_t input) {
 
 void lsx_encrypt_twofish(lsx_twofish_context* ctx,
                          const uint8_t in[16], uint8_t out[16]) {
+  unsigned round;
   /* whiten input */
   uint32_t R0 = bytes_to_word(in) ^ ctx->W[0];
   uint32_t R1 = bytes_to_word(in+4) ^ ctx->W[1];
   uint32_t R2 = bytes_to_word(in+8) ^ ctx->W[2];
   uint32_t R3 = bytes_to_word(in+12) ^ ctx->W[3];
   /* round function */
-  for(int round = 0; round < 16; round += 2) {
+  for(round = 0; round < 16; round += 2) {
     uint32_t Fr0, Fr1, T0, T1;
 #define F(R0, R1, round, F0, F1) \
     T0 = g(ctx, R0); T1 = g(ctx, rotate_left(R1,8)); \
@@ -101,13 +102,14 @@ void lsx_encrypt_twofish(lsx_twofish_context* ctx,
 
 void lsx_decrypt_twofish(lsx_twofish_context* ctx,
                          const uint8_t in[16], uint8_t out[16]) {
+  int round;
   /* whiten input */
   uint32_t R2 = bytes_to_word(in) ^ ctx->W[4];
   uint32_t R3 = bytes_to_word(in+4) ^ ctx->W[5];
   uint32_t R0 = bytes_to_word(in+8) ^ ctx->W[6];
   uint32_t R1 = bytes_to_word(in+12) ^ ctx->W[7];
   /* round function */
-  for(int round = 14; round >= 0; round -= 2) {
+  for(round = 14; round >= 0; round -= 2) {
     uint32_t Fr0, Fr1, T0, T1;
 #define F_(R0, R1, round, F0, F1) \
     T0 = g(ctx, R0); T1 = g(ctx, rotate_left(R1,8)); \

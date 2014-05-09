@@ -52,6 +52,6 @@ include/gen/twofish_tables.h: src/gen_twofish_tables.lua
 	@lua "$<" > "$@" || (rm -f "$@"; false)
 
 clean:
-	rm -f obj/*.o obj/*.d *~ \#*\# bin/* lib/* *.d
+	rm -f obj/*.o obj/*.d src/*.o *~ \#*\# bin/* lib/* *.d
 
 include $(wildcard obj/*.d)

@@ -78,6 +78,7 @@ void lsx_input_sha256_expert(lsx_sha256_expert_context* ctx,
 void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
                               const void* input, size_t bytes,
                               uint8_t out[SHA256_HASHBYTES]) {
+  unsigned i;
   uint8_t buf[SHA256_BLOCKBYTES];
   if(bytes >= SHA256_BLOCKBYTES) {
     size_t blocks = bytes / SHA256_BLOCKBYTES;
@@ -99,7 +100,7 @@ void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
   }
   int64_to_bytes(actual_bits_out, buf + SHA256_BLOCKBYTES - 8);
   lsx_input_sha256_expert(ctx, buf, 1);
-  for(unsigned i = 0; i < 8; ++i) {
+  for(i = 0; i < 8; ++i) {
     word_to_bytes(ctx->h[i], out + i * 4);
   }
   lsx_explicit_bzero(buf, sizeof(buf));
