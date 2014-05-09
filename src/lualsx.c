@@ -4,8 +4,12 @@
 #include <lauxlib.h>
 #include <string.h>
 
+#if LUA_VERSION_NUM < 502
+#define lua_rawlen lua_objlen
+#endif
+
 /* used to mark uninitialized Twofish contexts */
-#define IMPOSSIBLE_MDS_RESULT 0xDEADBEEF
+#define DESTROYED_MDS_RESULT 0
 /* used to mark uninitialized SHA-256 contexts */
 #define IMPOSSIBLE_BYTES_OUT (~(uint64_t)0)
 
@@ -145,6 +149,7 @@ static int f_twofish_encrypt(lua_State* L) {
   size_t length;
   const char* plaintext = luaL_checklstring(L, 2, &length);
   int start;
+  if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 3 && !lua_isnil(L, 3)) {
     start = luaL_checkinteger(L, 3);
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");
@@ -166,6 +171,7 @@ static int f_twofish_decrypt(lua_State* L) {
   size_t length;
   const char* ciphertext = luaL_checklstring(L, 2, &length);
   int start;
+  if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 3 && !lua_isnil(L, 3)) {
     start = luaL_checkinteger(L, 3);
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");
@@ -191,6 +197,7 @@ static int f_twofish_ctr(lua_State* L) {
   size_t length;
   const char* message = luaL_checklstring(L, 4, &length);
   int start;
+  if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 5 && !lua_isnil(L, 5)) {
     start = luaL_checkinteger(L, 5);
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");
@@ -251,7 +258,7 @@ static int f_twofish(lua_State* L) {
   }
   lua_setmetatable(L, -2);
   if(lua_toboolean(L, 1) == 0)
-    ctx->s[0][0] = IMPOSSIBLE_MDS_RESULT;
+    ctx->s[0][0] = DESTROYED_MDS_RESULT;
   else {
     lua_pushcfunction(L, f_twofish_setup);
     lua_pushvalue(L, -2);
