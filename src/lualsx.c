@@ -291,7 +291,7 @@ static const struct luaL_Reg regs[] = {
 
 int luaopen_lsx(lua_State* L) {
 #if LUA_VERSION_NUM < 502
-  luaL_register(l, "lsx", regs);
+  luaL_register(L, "lsx", regs);
 #else
   lua_newtable(L);
   luaL_setfuncs(L, regs, 0);
