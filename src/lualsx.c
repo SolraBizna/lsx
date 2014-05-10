@@ -215,8 +215,8 @@ static int f_twofish_ctr(lua_State* L) {
     lsx_explicit_bzero(buf+noncelen, sizeof(buf)-noncelen);
   }
   else lsx_explicit_bzero(buf, sizeof(buf));
-  counter = bytes_to_int64(buf) + counter;
-  int64_to_bytes(counter, buf);
+  counter = bytes_to_int64(buf+8) + counter;
+  int64_to_bytes(counter, buf+8);
   lsx_encrypt_twofish(ctx, buf, buf);
   for(i = 0; i < TWOFISH_BLOCKBYTES; ++i) {
     buf[i] ^= message[i+start];
