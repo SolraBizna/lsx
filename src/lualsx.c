@@ -149,7 +149,8 @@ static int f_twofish_encrypt(lua_State* L) {
   size_t length;
   const char* plaintext = luaL_checklstring(L, 2, &length);
   int start;
-  if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
+  // Doesn't work?
+  //if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 3 && !lua_isnil(L, 3)) {
     start = luaL_checkinteger(L, 3);
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");
@@ -171,7 +172,8 @@ static int f_twofish_decrypt(lua_State* L) {
   size_t length;
   const char* ciphertext = luaL_checklstring(L, 2, &length);
   int start;
-  if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
+  // Doesn't work?
+  //if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 3 && !lua_isnil(L, 3)) {
     start = luaL_checkinteger(L, 3);
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");
@@ -197,7 +199,8 @@ static int f_twofish_ctr(lua_State* L) {
   size_t length;
   const char* message = luaL_checklstring(L, 4, &length);
   int start;
-  if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
+  // Doesn't work?
+  //if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 5 && !lua_isnil(L, 5)) {
     start = luaL_checkinteger(L, 5);
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");

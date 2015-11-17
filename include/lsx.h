@@ -11,6 +11,9 @@ extern "C" {
 /* Why is this not present on all OSes? */
 extern void lsx_explicit_bzero(void* p, size_t n);
 
+/* This is not ideal for generation of long-lived keys. */
+extern void lsx_get_random(void* p, size_t n);
+
 /*** TWOFISH ***/
 
 /* Defines for people to use if they're nice */
@@ -124,6 +127,9 @@ extern void lsx_finish_sha256(lsx_sha256_context* ctx,
    above interfaces instead of reading it all in at once. */
 extern void lsx_calculate_sha256(const void* message, size_t bytes,
                                  uint8_t out[SHA256_HASHBYTES]);
+
+/*** SRP-6a ***/
+/* TODO */
 
 #ifdef __cplusplus
 }
