@@ -2,9 +2,37 @@
 
 #if defined(__WIN32__) || defined(_WIN32) || defined(WIN32)
 
-#error "RtlGenRandom. Not the stuff below."
-CryptAcquireContext(&???, NULL, NULL, ?, CRYPT_VERIFYCONTEXT|CRYPT_SILENT);
-CryptGenRandom...
+#include <windows.h>
+#include <stdio.h>
+
+void lsx_get_random(void* p, size_t n) {
+  static HMODULE hLib = NULL;
+  static BOOLEAN (APIENTRY *pfn)(void*, ULONG);
+  if(hLib == NULL) {
+    hLib = LoadLibraryA("ADVAPI32.DLL");
+    if(!hLib) {
+      fprintf(stderr, "Could not open ADVAPI32.dll\n");
+      /* Don't let abort() fail. */
+      while(1) abort();
+    }
+    pfn = (BOOLEAN (APIENTRY *)(void*,ULONG))
+      GetProcAddress(hLib,"SystemFunction036");
+    if(!pfn) {
+      fprintf(stderr, "Could not get RtlGenRandom from ADVAPI32.dll\n");
+      /* Don't let abort() fail. */
+      while(1) abort();
+    }
+  }
+  if(!pfn(p, n)) {
+    fprintf(stderr, "Could not get random data from RtlGenRandom\n");
+    /* Don't let abort() fail. */
+    while(1) abort();
+  }
+}
+
+void lsx_get_extremely_random(void* p, size_t n) {
+  lsx_get_random(p, n);
+}
 
 #elif defined(__unix) || defined(__linux) || defined(__posix)
 
