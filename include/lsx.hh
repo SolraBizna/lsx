@@ -23,26 +23,34 @@ namespace lsx {
   public:
     static const unsigned block_bytes = TWOFISH_BLOCKBYTES;
     inline ~twofish() { sanitize(); }
-    inline void encrypt(const uint8_t in[TWOFISH_BLOCKBYTES],
+    inline twofish& encrypt(const uint8_t in[TWOFISH_BLOCKBYTES],
                         uint8_t out[TWOFISH_BLOCKBYTES]) {
       lsx_encrypt_twofish(this, in, out);
+      return *this;
     }
-    inline void decrypt(const uint8_t in[TWOFISH_BLOCKBYTES],
+    inline twofish& decrypt(const uint8_t in[TWOFISH_BLOCKBYTES],
                         uint8_t out[TWOFISH_BLOCKBYTES]) {
       lsx_decrypt_twofish(this, in, out);
+      return *this;
     }
-    inline void rekey128(const uint8_t key[TWOFISH128_KEYBYTES]) {
+    inline twofish& rekey128(const uint8_t key[TWOFISH128_KEYBYTES]) {
       lsx_setup_twofish128(this, key);
+      return *this;
     }
-    inline void rekey192(const uint8_t key[TWOFISH192_KEYBYTES]) {
+    inline twofish& rekey192(const uint8_t key[TWOFISH192_KEYBYTES]) {
       lsx_setup_twofish192(this, key);
+      return *this;
     }
-    inline void rekey256(const uint8_t key[TWOFISH256_KEYBYTES]) {
+    inline twofish& rekey256(const uint8_t key[TWOFISH256_KEYBYTES]) {
       lsx_setup_twofish256(this, key);
+      return *this;
     }
     /* This is explicitly called by the destructor, so you don't need to call
        it unless the instance will outlive the usefulness of the current key */
-    inline void sanitize() { lsx_destroy_twofish(this); }
+    inline twofish& sanitize() {
+      lsx_destroy_twofish(this);
+      return *this;
+    }
   };
   class twofish128 : public twofish {
   public:
@@ -81,21 +89,29 @@ namespace lsx {
     inline ~sha256_expert() { sanitize(); }
     /* Add complete blocks of message data
        (number of bytes = `block_bytes` * blocks */
-    inline void input(const void* input, size_t blocks) {
+    inline sha256_expert& input(const void* input, size_t blocks) {
       lsx_input_sha256_expert(this, input, blocks);
+      return *this;
     }
     /* Add any remaining data and compute the hash.
        This leaves the instance in an unusable state. Call `reinit` on it if
        you want to use it again before destruction. */
-    inline void finish(const void* input, size_t bytes,
-                       uint8_t out[hash_bytes]) {
+    inline sha256_expert& finish(uint8_t out[hash_bytes],
+                                 const void* input = 0, size_t bytes = 0) {
       lsx_finish_sha256_expert(this, input, bytes, out);
+      return *this;
     }
     /* Initialize the instance for a new message. */
-    inline void reinit() { lsx_setup_sha256_expert(this); }
+    inline sha256_expert& reinit() {
+      lsx_setup_sha256_expert(this);
+      return *this;
+    }
     /* This is explicitly called by the destructor, so you don't need to call
        it unless the instance will continue existing. */
-    inline void sanitize() { lsx_destroy_sha256_expert(this); }
+    inline sha256_expert& sanitize() {
+      lsx_destroy_sha256_expert(this);
+      return *this;
+    }
   };
   /* easy interface; provide message data in any quantities you want */
   class sha256 : protected lsx_sha256_context {
@@ -107,20 +123,28 @@ namespace lsx {
     }
     inline ~sha256() { sanitize(); }
     /* Add message data */
-    inline void input(const void* input, size_t bytes) {
+    inline sha256& input(const void* input, size_t bytes) {
       lsx_input_sha256(this, input, bytes);
+      return *this;
     }
     /* Compute the hash.
        This leaves the instance in an unusable state. Call `reinit` on it if
        you want to use it again before destruction. */
-    inline void finish(uint8_t out[hash_bytes]) {
+    inline sha256& finish(uint8_t out[hash_bytes]) {
       lsx_finish_sha256(this, out);
+      return *this;
     }
     /* Initialize the instance for a new message. */
-    inline void reinit() { lsx_setup_sha256(this); }
+    inline sha256& reinit() {
+      lsx_setup_sha256(this);
+      return *this;
+    }
     /* This is explicitly called by the destructor, so you don't need to call
        it unless the instance will continue existing. */
-    inline void sanitize() { lsx_destroy_sha256(this); }
+    inline sha256& sanitize() {
+      lsx_destroy_sha256(this);
+      return *this;
+    }
     /* "lazy" interface; pass in all message data at once */
     static inline void sum(const void* message, size_t bytes,
                            uint8_t out[hash_bytes]) {
