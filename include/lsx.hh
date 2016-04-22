@@ -97,7 +97,8 @@ namespace lsx {
        This leaves the instance in an unusable state. Call `reinit` on it if
        you want to use it again before destruction. */
     inline sha256_expert& finish(uint8_t out[hash_bytes],
-                                 const void* input = 0, size_t bytes = 0) {
+                                 const void* input = nullptr,
+                                 size_t bytes = 0) {
       lsx_finish_sha256_expert(this, input, bytes, out);
       return *this;
     }
