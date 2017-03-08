@@ -4,7 +4,7 @@ source = {
    url="data:"
 }
 description = {summary = "A Lua binding to LibSolraXandria"}
-dependencies = {"lua >= 5.1, < 5.3"}
+dependencies = {"lua >= 5.1, < 5.4"}
 build = {
    type = "builtin",
    modules = {
