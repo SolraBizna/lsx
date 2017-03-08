@@ -193,7 +193,11 @@ static int f_twofish_decrypt(lua_State* L) {
 static int f_twofish_ctr(lua_State* L) {
   unsigned i;
   lsx_twofish_context* ctx = (lsx_twofish_context*)luaL_checkudata(L, 1, "lsx_twofish_context");
+#if LUA_VERSION_NUM >= 503
+  uint64_t counter = (uint64_t)luaL_checkinteger(L, 2);
+#else
   uint64_t counter = (uint64_t)luaL_checknumber(L, 2);
+#endif
   size_t noncelen;
   const char* nonce = luaL_optlstring(L, 3, NULL, &noncelen);
   size_t length;
