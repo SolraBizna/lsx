@@ -27,7 +27,7 @@ test: bin/lsx_test_twofish bin/lsx_test_sha256
 	@bin/lsx_test_sha256
 	@echo Tests passed!
 
-bin/liblsx.a bin/liblsx$(SO): obj/lsx_twofish.o obj/lsx_sha256.o obj/lsx_bzero.o
+bin/liblsx.a bin/liblsx$(SO): obj/lsx_twofish.o obj/lsx_sha256.o obj/lsx_bzero.o obj/lsx_random.o
 bin/lsx_test_twofish: obj/lsx_test_twofish.o bin/liblsx.a
 bin/lsx_test_sha256: obj/lsx_test_sha256.o bin/liblsx.a
 
