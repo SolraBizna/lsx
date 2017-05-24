@@ -3,7 +3,7 @@ INSTALL=install -p
 
 # Linux, other POSIX
 CC=gcc
-CCFLAGS=-std=c99 -O3 -fpic -MP -MMD -Iinclude/ -g -Wall -Wextra -Werror -c -o
+CFLAGS=-std=c99 -O3 -fPIC -MP -MMD -Iinclude/ -g -Wall -Wextra -Werror -c -o
 LD=gcc
 LDFLAGS=-std=c99 -g -o
 LD_SHARED=gcc
@@ -45,7 +45,7 @@ bin/%$(EXE):
 
 obj/%.o: src/%.c
 	@echo Compiling "$<"...
-	@$(CC) $(CCFLAGS) "$@" "$<"
+	@$(CC) $(CFLAGS) "$@" "$<"
 
 include/gen/twofish_tables.h: src/gen_twofish_tables.lua
 	@echo Generating "$@"...

@@ -80,6 +80,11 @@ extern void lsx_decrypt_twofish(lsx_twofish_context* ctx,
 #define lsx_destroy_twofish128 lsx_destroy_twofish
 #define lsx_destroy_twofish192 lsx_destroy_twofish
 #define lsx_destroy_twofish256 lsx_destroy_twofish
+/* destroy is the backwards-compatible name for this function */
+#define lsx_sanitize_twofish lsx_destroy_twofish
+#define lsx_sanitize_twofish128 lsx_sanitize_twofish
+#define lsx_sanitize_twofish192 lsx_sanitize_twofish
+#define lsx_sanitize_twofish256 lsx_sanitize_twofish
 
 /*** SHA-256 ***/
 
@@ -108,7 +113,9 @@ extern void lsx_finish_sha256_expert(lsx_sha256_expert_context* ctx,
                                      const void* input, size_t bytes,
                                      uint8_t out[SHA256_HASHBYTES]);
 /* Convenience function to destroy any remaining important data. */
+/* destroy is the backwards-compatible name for this function */
 #define lsx_destroy_sha256_expert(ctx) lsx_explicit_bzero(ctx, sizeof(*(ctx)))
+#define lsx_sanitize_sha256_expert lua_destroy_sha256_expert
 
 /* This is the easy interface. It's a thin layer on the above. If all you want
    to do is hash a complete message in memory, there's an even easier interface
@@ -129,7 +136,9 @@ extern void lsx_input_sha256(lsx_sha256_context* ctx,
 extern void lsx_finish_sha256(lsx_sha256_context* ctx,
                               uint8_t out[SHA256_HASHBYTES]);
 /* Convenience function to destroy any remaining important data. */
+/* destroy is the backwards-compatible name for this function */
 #define lsx_destroy_sha256(ctx) lsx_explicit_bzero(ctx, sizeof(*(ctx)))
+#define lsx_sanitize_sha256 lsx_destroy_sha256
 
 /* This is the easiest interface. If your message does not already reside
    entirely in memory, or if it is particularly long, please use one of the

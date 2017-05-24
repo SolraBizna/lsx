@@ -95,7 +95,8 @@ static int f_sha256_finish_binary(lua_State* L) {
 
 static int f_sha256_destroy(lua_State* L) {
   lsx_sha256_context* ctx = (lsx_sha256_context*)luaL_checkudata(L, 1, "lsx_sha256_context");
-  lsx_destroy_sha256(ctx);
+  lsx_sanitize_sha256(ctx);
+  ctx->expert.bytes_so_far = IMPOSSIBLE_BYTES_OUT;
   return 0;
 }
 
@@ -105,6 +106,7 @@ static const struct luaL_Reg sha256_methods[] = {
   {"finish",f_sha256_finish},
   {"finish_binary",f_sha256_finish_binary},
   {"destroy",f_sha256_destroy}, // this is a bit pointless, isn't it?
+  {"sanitize",f_sha256_destroy},
   {NULL, NULL},
 };
 
@@ -234,7 +236,7 @@ static int f_twofish_ctr(lua_State* L) {
 
 static int f_twofish_destroy(lua_State* L) {
   lsx_twofish_context* ctx = (lsx_twofish_context*)luaL_checkudata(L, 1, "lsx_twofish_context");
-  lsx_destroy_twofish(ctx);
+  lsx_sanitize_twofish(ctx);
   return 0;
 }
 
@@ -244,6 +246,7 @@ static const struct luaL_Reg twofish_methods[] = {
   {"decrypt",f_twofish_decrypt},
   {"ctr",f_twofish_ctr},
   {"destroy",f_twofish_destroy},
+  {"sanitize",f_twofish_destroy},
   {NULL, NULL},
 };
 
@@ -294,12 +297,36 @@ static int f_xor(lua_State* L) {
   return 1;
 }
 
+static int f_get_random(lua_State* L) {
+  lua_Integer count = luaL_checkinteger(L,1);
+  char* ret = malloc(count);
+  if(!ret)
+    return luaL_error(L, "malloc error");
+  lsx_get_random(ret, count);
+  lua_pushlstring(L, ret, count);
+  free(ret);
+  return 1;
+}
+
+static int f_get_extremely_random(lua_State* L) {
+  lua_Integer count = luaL_checkinteger(L,1);
+  char* ret = malloc(count);
+  if(!ret)
+    return luaL_error(L, "malloc error");
+  lsx_get_extremely_random(ret, count);
+  lua_pushlstring(L, ret, count);
+  free(ret);
+  return 1;
+}
+
 static const struct luaL_Reg regs[] = {
   {"sha256_sum",f_sha256_sum},
   {"sha256_sum_binary",f_sha256_sum_binary},
   {"sha256",f_sha256},
   {"twofish",f_twofish},
   {"xor",f_xor},
+  {"get_random",f_get_random},
+  {"get_extremely_random",f_get_extremely_random},
   {NULL, NULL},
 };
 

@@ -54,21 +54,21 @@ namespace lsx {
   };
   class twofish128 : public twofish {
   public:
-    static const unsigned key_bytes = TWOFISH128_KEYBYTES;
+    static const unsigned KEY_BYTES = TWOFISH128_KEYBYTES;
     inline twofish128(const uint8_t key[key_bytes]) {
       rekey128(key);
     }
   };
   class twofish192 : public twofish {
   public:
-    static const unsigned key_bytes = TWOFISH192_KEYBYTES;
+    static const unsigned KEY_BYTES = TWOFISH192_KEYBYTES;
     inline twofish192(const uint8_t key[key_bytes]) {
       rekey192(key);
     }
   };
   class twofish256 : public twofish {
   public:
-    static const unsigned key_bytes = TWOFISH256_KEYBYTES;
+    static const unsigned KEY_BYTES = TWOFISH256_KEYBYTES;
     inline twofish256(const uint8_t key[key_bytes]) {
       rekey256(key);
     }
