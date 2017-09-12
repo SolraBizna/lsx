@@ -32,22 +32,27 @@ bin/lsx_test_twofish: obj/lsx_test_twofish.o bin/liblsx.a
 bin/lsx_test_sha256: obj/lsx_test_sha256.o bin/liblsx.a
 
 bin/%$(SO):
+	@mkdir -p bin
 	@echo Linking "$@"...
 	@$(LD_SHARED) $(LDFLAGS_SHARED) "$@" $^
 
 bin/%.a:
+	@mkdir -p bin
 	@echo Archiving "$@"...
 	@$(AR) $(ARFLAGS) "$@" $^
 
 bin/%$(EXE):
+	@mkdir -p bin
 	@echo Linking "$@"...
 	@$(LD) $(LDFLAGS) "$@" $^
 
 obj/%.o: src/%.c
+	@mkdir -p obj
 	@echo Compiling "$<"...
 	@$(CC) $(CFLAGS) "$@" "$<"
 
 include/gen/twofish_tables.h: src/gen_twofish_tables.lua
+	@mkdir -p include/gen
 	@echo Generating "$@"...
 	@lua "$<" > "$@" || (rm -f "$@"; false)
 
