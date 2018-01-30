@@ -204,7 +204,7 @@ static int f_twofish_ctr(lua_State* L) {
   const char* nonce = luaL_optlstring(L, 3, NULL, &noncelen);
   size_t length;
   const char* message = luaL_checklstring(L, 4, &length);
-  int start;
+  lua_Integer start, out_length;
   // Doesn't work?
   //if(ctx->s[0][0] == DESTROYED_MDS_RESULT) return luaL_error(L, "lsx_twofish_context not currently initalized; you must call :setup() to set up a key");
   if(lua_gettop(L) >= 5 && !lua_isnil(L, 5)) {
@@ -212,11 +212,16 @@ static int f_twofish_ctr(lua_State* L) {
     if(start < 0 || start > length) return luaL_error(L, "`start' parameter must be between 1 and the length of the ciphertext string");
     start -= 1;
     if(start + TWOFISH_BLOCKBYTES > length)
-      return luaL_error(L, "twofish encrypts %d bytes at a time", TWOFISH_BLOCKBYTES);
+      out_length = length - start;
+    else
+      out_length = TWOFISH_BLOCKBYTES;
   }
-  else if(length != TWOFISH_BLOCKBYTES)
-    return luaL_error(L, "twofish encrypts %d bytes at a time", TWOFISH_BLOCKBYTES);
-  else start = 0;
+  else {
+    if(length > TWOFISH_BLOCKBYTES)
+      return luaL_error(L, "twofish encrypts %d bytes at a time", TWOFISH_BLOCKBYTES);
+    start = 0;
+    out_length = length;
+  }
   uint8_t buf[TWOFISH_BLOCKBYTES];
   if(nonce) {
     if(noncelen > TWOFISH_BLOCKBYTES) return luaL_error(L, "CTR nonce may not be longer than %d bytes", TWOFISH_BLOCKBYTES);
@@ -227,10 +232,10 @@ static int f_twofish_ctr(lua_State* L) {
   counter = bytes_to_int64(buf+8) + counter;
   int64_to_bytes(counter, buf+8);
   lsx_encrypt_twofish(ctx, buf, buf);
-  for(i = 0; i < TWOFISH_BLOCKBYTES; ++i) {
+  for(i = 0; i < out_length; ++i) {
     buf[i] ^= message[i+start];
   }
-  lua_pushlstring(L, buf, TWOFISH_BLOCKBYTES);
+  lua_pushlstring(L, buf, out_length);
   return 1;
 }
 

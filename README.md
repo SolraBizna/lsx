@@ -87,7 +87,7 @@ The reverse of `encrypt`.
 
     output = state:ctr(counter, nonce, input[, start])
 
-Encrypts OR decrypts a block using a straightforward implementation of CTR mode. The `input` and `start` parameters behave the same as the corresponding parameters to `encrypt`/`decrypt`. If `input` is plaintext, `output` will be ciphertext, and vice versa.
+Encrypts OR decrypts a block using a straightforward implementation of CTR mode. The `input` and `start` parameters behave the same as the corresponding parameters to `encrypt`/`decrypt`, except that `ctr` can en-/decrypt a block smaller than 16 bytes. If `input` is plaintext, `output` will be ciphertext, and vice versa.
 
 The `counter` parameter must be an integer between 0 and 2^64-1 (or 2^53-1 in Lua 5.2 and earlier). To be effective encryption, each block of output MUST have a different `counter` value. A simple index is sufficient to meet this requirement.
 
