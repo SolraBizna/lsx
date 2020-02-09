@@ -3,7 +3,7 @@ INSTALL=install -p
 
 # Linux, other POSIX
 CC=gcc
-CFLAGS=-std=c99 -O3 -fPIC -MP -MMD -Iinclude/ -g -Wall -Wextra -Werror -c -o
+CFLAGS=-std=c99 -O3 -fPIC -MP -MMD -Iinclude/ -g -Wall -Wextra -c -o
 LD=gcc
 LDFLAGS=-std=c99 -g -o
 LD_SHARED=gcc
