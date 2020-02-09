@@ -34,11 +34,13 @@ static inline void h_top_half(uint32_t X, const uint8_t* l, int k, int j, uint32
     x[1] = q0[x[1]] ^ l[13 + j * 3];
     x[2] = q0[x[2]] ^ l[14 + j * 3];
     x[3] = q1[x[3]] ^ l[15 + j * 3];
+    /* fall through */
   case 3:
     x[0] = q1[x[0]] ^ l[8 + j * 2];
     x[1] = q1[x[1]] ^ l[9 + j * 2];
     x[2] = q0[x[2]] ^ l[10 + j * 2];
     x[3] = q0[x[3]] ^ l[11 + j * 2];
+    /* fall through */
   case 2:
     o[0] = mdsq[0][q0[q0[x[0]] ^ l[4 + j]] ^ l[0]];
     o[1] = mdsq[1][q0[q1[x[1]] ^ l[5 + j]] ^ l[1]];
