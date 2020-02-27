@@ -4,7 +4,7 @@ This library is fairly simple, runs with reasonable speed, uses very little memo
 
 This library is distributed under the zlib license. This puts very few restrictions on use. See `LICENSE.md` for the complete, very short text of the license.
 
-The C library also includes an implementation of a secure RAM erase function, like OpenBSD's `explicit_bzero`. The Lua library also includes a function for computing the binary XOR of two strings.
+The C library also includes an implementation of a "secure" RAM erase function, like OpenBSD's `explicit_bzero`. The Lua library also includes a function for computing the binary XOR of two strings.
 
 # Table Of Contents
 
@@ -174,7 +174,7 @@ You can, instead, embed the relevant source files directly into your application
 
 Zeroes `len` bytes, starting at `ptr`, sternly informing the compiler *not* to optimize the operation out.
 
-You should sanitize sensitive data (passwords, keys, etc.) as soon as possible after working with it, using this function. This will help prevent cold boot attacks and some other, now-rare, exploits.
+You should sanitize sensitive data (passwords, keys, etc.) as soon as possible after working with it, using this function. This will help prevent cold boot attacks and some other, now-rare, exploits. As compilers and processors get smarter, this measure gets less effective.
 
 ### <a name="C_API_Random_Data" />Random Data
 
@@ -307,7 +307,7 @@ You can, instead, embed the relevant source files directly into your application
 
 Zeroes `len` bytes, starting at `ptr`, sternly informing the compiler *not* to optimize the operation out.
 
-You should sanitize sensitive data (passwords, keys, etc.) as soon as possible after working with it, using this function. This will help prevent cold boot attacks and some other, now-rare, exploits.
+You should sanitize sensitive data (passwords, keys, etc.) as soon as possible after working with it, using this function. This will help prevent cold boot attacks and some other, now-rare, exploits. As compilers and processors get smarter, this measure gets less effective.
 
 ### <a name="CXX_API_Random_Data" />Random Data
 
