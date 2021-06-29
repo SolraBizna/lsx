@@ -34,7 +34,7 @@ void lsx_get_extremely_random(void* p, size_t n) {
   lsx_get_random(p, n);
 }
 
-#elif defined(__unix) || defined(__linux) || defined(__posix)
+#elif defined(__unix) || defined(__linux) || defined(__posix) || defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 
 #if defined(HAVE_ARC4RANDOM_BUF)
 #error Use it
