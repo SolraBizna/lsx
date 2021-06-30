@@ -1,8 +1,8 @@
 package = "luaLSX"
-version = "1.1-1"
+version = "1.1.1-1"
 source = {
    url="git://github.com/SolraBizna/lsx",
-   tag="v1.1"
+   tag="v1.1.1"
 }
 description = {
    summary = "A Lua library implementing Twofish and SHA-256",
@@ -10,7 +10,7 @@ description = {
    homepage = "https://github.com/SolraBizna/lsx",
    license = "zlib"
 }
-dependencies = {"lua >= 5.1, < 5.4"}
+dependencies = {"lua >= 5.1, < 5.5"}
 build = {
    type = "builtin",
    modules = {
