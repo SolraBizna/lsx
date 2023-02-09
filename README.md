@@ -6,7 +6,7 @@ This library is distributed under the zlib license. This puts very few restricti
 
 The C library also includes an implementation of a "secure" RAM erase function, like OpenBSD's `explicit_bzero`. The Lua library also includes a function for computing the binary XOR of two strings.
 
-# Table Of Contents
+# Table of Contents
 
 - [Lua](#Lua)
     - [Installation](#Lua_Installation)
